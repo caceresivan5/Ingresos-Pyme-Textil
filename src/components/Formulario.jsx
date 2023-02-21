@@ -1,9 +1,9 @@
 import React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Swal from 'sweetalert2'
 
 
-const Formulario = ( {setPaciente} ) => {
+const Formulario = ( {pacientes, setPacientes, paciente, setPaciente} ) => {
 
   const [nombre, setNombre] = useState("")
   const [propietario, setPropietario] = useState("")
@@ -11,7 +11,25 @@ const Formulario = ( {setPaciente} ) => {
   const [fecha, setFecha] = useState("")
   const [sintomas, setSintomas] = useState("")
 
+  useEffect ( ()=>{
+    if(Object.keys(paciente).length > 0 ){
 
+      setNombre(paciente.nombre)
+      setPropietario(paciente.propietario)
+      setEmail(paciente.email)
+      setFecha(paciente.fecha)
+      setSintomas(paciente.sintomas)
+
+    }
+
+  }, [paciente])
+
+  function generaId() {
+    const random = Math.random().toString(36).substring(2)
+    const fecha = Date.now().toString(36)
+
+    return random + fecha
+  }
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -20,14 +38,49 @@ const Formulario = ( {setPaciente} ) => {
       
       Swal.fire({
         icon: 'error',
-        title: 'ANDA PA LLA BOBO',
+        title: 'ERROR',
         text: 'Hay al menos un campo vacio!',
         footer: '<a href="">Complete todos los campos para poder continuar</a>'
       })
+    }else{ 
+      //OBJETO PACIENTE
+      const ObjetoPaciente = {
+        nombre, 
+        propietario, 
+        email,
+         fecha, 
+         sintomas,
+         
+      }
 
-    }
-    setPaciente(nombre)
+      if(paciente.id){
+        //EDITANDO REGISTRO
+        ObjetoPaciente.id = paciente.id
+
+        const pacientesActualizados = pacientes.map( pacienteState => pacienteState.id === paciente.id ? ObjetoPaciente : pacienteState)
+       
+        setPacientes(pacientesActualizados)
+        setPaciente({})
+
+      }else{
+        // NUEVO REGISTRO
+
+        ObjetoPaciente.id = generaId();
+        setPacientes([...pacientes, ObjetoPaciente]) //toma una copia de pacientes y agrega los nuevos pacientes dentro de ObjetoPaciente mediante Setpaciente
+       
+      }
+
+     //REINICIANDO EL FORMULARIO
+
+     setNombre('')
+     setPropietario('')
+     setEmail('')
+     setFecha('')
+     setSintomas('')
+
   }
+
+}
 
 
   return (
@@ -111,7 +164,7 @@ const Formulario = ( {setPaciente} ) => {
           </div>
           <input type="submit" 
           className='bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-indigo-700 cursor-pointer transition-all'
-          value='Agregar Paciente'
+          value={ paciente.id ? 'EDITAR PACIENTE' : 'AGREGAR PACIENTE'}
           />
         </form>
     </div>
