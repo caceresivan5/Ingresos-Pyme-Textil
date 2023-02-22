@@ -1,6 +1,35 @@
 import React from 'react'
+import Swal from 'sweetalert2'
 
-const Paciente = ( {paciente, setPaciente = {setPaciente} }) => {
+const Paciente = ( {paciente, setPaciente, eliminarPaciente }) => {
+
+  const handleEliminar = () => {
+    const preguntaEliminar = (
+      Swal.fire({
+        title: 'Seguro quieres eliminar este Paciente?',
+        text: "No podras revertir esto!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'SI,Quiero eliminar este Paciente!'
+      }).then((result) => {
+        if (result.isConfirmed && preguntaEliminar ) {
+          Swal.fire(
+            'Eliminado!',
+            'Has eliminado a este Paciente Correctamente.',
+            'success'
+          )
+          eliminarPaciente(paciente.id)
+        }
+      })
+      )
+
+    /*if(preguntaEliminar) {
+      eliminarPaciente(paciente.id)
+    }
+    */
+  }
 
   return (
     <div className='m-3 bg-white shadow-md px-5 py-10 rounded-xl'>
@@ -34,7 +63,8 @@ const Paciente = ( {paciente, setPaciente = {setPaciente} }) => {
       </button>
       
       <button  type='button'
-      className='py-2 px-5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg'>
+      className='py-2 px-5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg'
+      onClick={ handleEliminar }>
         ELIMINAR
       </button>
 
